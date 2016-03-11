@@ -73,21 +73,33 @@ public final class AndroidMissingTranslationsFinder {
             }
         }
 
+
         // Print results
-        System.out.println("\nStrings existing in default locale only (missing in all others):\n");
-        for (String commonMissingString : commonMissingStrings) {
-            System.out.println(commonMissingString);
+        int totalMissingStrings = 0;
+        if (commonMissingStrings.size() > 0) {
+            System.out.println(String.format("Default locale only string (missing in ALL others) (%s strings)", commonMissingStrings.size()));
+            for (String commonMissingString : commonMissingStrings) {
+                System.out.println("\t" + commonMissingString);
+            }
+            System.out.println();
+            totalMissingStrings += commonMissingStrings.size();
         }
-        System.out.println("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
 
         for (String locale : LOCALES) {
-            System.out.println(String.format("Strings missing in locale [%s]:\n", locale));
             final Set<String> localeMissingStrings = missingStrings.get(locale);
-            for (String string : localeMissingStrings) {
-                System.out.println(string);
+            if (localeMissingStrings.size() > 0) {
+                System.out.println(String.format("[%s] locale missing strings (may exist in others) (%s strings)", locale, localeMissingStrings.size()));
+                for (String string : localeMissingStrings) {
+                    System.out.println("\t" + string);
+                }
+                System.out.println();
+                totalMissingStrings += localeMissingStrings.size();
             }
-            System.out.println("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
         }
+
+        System.out.println(totalMissingStrings > 0 ?
+                String.format("Total missing strings: %s", totalMissingStrings) :
+                "Yay! All strings are existing in all locales!");
 
     }
 
