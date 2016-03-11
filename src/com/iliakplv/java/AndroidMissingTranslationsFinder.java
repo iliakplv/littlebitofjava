@@ -14,7 +14,6 @@ import java.util.Set;
 
 /**
  * Dummy Android missing translations finder.
- * Displays list of string names existing in default locale but missing in any other supported locale.
  *
  * Do not forget to change RES_DIR constant to your actual value before running!
  */
@@ -26,7 +25,8 @@ public final class AndroidMissingTranslationsFinder {
     private static final String STRINGS_FILE = "strings.xml";
 
     private static final String[] LOCALES = {
-            "da", "de", "el", "en-rGB", "es", "fi", "fr", "it", "nl", "no", "pl", "pt", "ru", "sv", "tr"};
+            "da", "de", "el", "en-rGB", "es", "fi", "fr", "it", "nl", "no", "pl", "pt", "ru", "sv", "tr"
+    };
 
 
     public static void main(String[] args) throws Exception {
