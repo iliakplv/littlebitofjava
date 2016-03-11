@@ -35,7 +35,7 @@ public final class AndroidMissingTranslationsFinder {
         final Set<String> defaultStringsSet = getTranslations(null);
 
         // map of missing string sets for each app locale (locale is a key)
-        final HashMap<String, Set<String>> missingStrings = new HashMap<>();
+        final Map<String, Set<String>> missingStrings = new HashMap<>();
 
         // set of string existing only in default locale but missing in all others
         final Set<String> commonMissingStrings = new HashSet<>();
@@ -59,8 +59,7 @@ public final class AndroidMissingTranslationsFinder {
         for (String locale : LOCALES) {
             final Set<String> localeMissingStrings = missingStrings.get(locale);
             for (String string : localeMissingStrings) {
-                final boolean missingInAllLocales = isStringMissingInAllLocales(missingStrings, string);
-                if (missingInAllLocales) {
+                if (isStringMissingInAllLocales(missingStrings, string)) {
                     commonMissingStrings.add(string);
                 }
             }
