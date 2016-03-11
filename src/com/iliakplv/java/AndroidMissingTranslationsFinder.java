@@ -20,7 +20,7 @@ import java.util.Set;
  */
 public final class AndroidMissingTranslationsFinder {
 
-    private static final String RES_DIR = "/Users/USER/workspace/spike-android/app/src/main/res/";
+    private static final String RES_DIR = "/Users/USER/workspace/PROJECT/app/src/main/res/";
 
     private static final String VALUES_DIR = "values";
     private static final String STRINGS_FILE = "strings.xml";
