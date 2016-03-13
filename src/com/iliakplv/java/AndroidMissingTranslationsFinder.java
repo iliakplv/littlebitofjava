@@ -58,7 +58,7 @@ public final class AndroidMissingTranslationsFinder {
                 }
             }
         }
-        System.out.println(String.format("Locales found: %s (+default)", locales.size()));
+        System.out.println(String.format("Locales found: %s + default", locales.size()));
         for (int i = 0; i < locales.size(); i++) {
             System.out.print(locales.get(i));
             if (i < locales.size() - 1) {
@@ -112,7 +112,7 @@ public final class AndroidMissingTranslationsFinder {
         int totalMissingStrings = 0;
 
         if (defaultMissingStrings.size() > 0) {
-            System.out.println(String.format("Strings missing in default locale (existing in some other) (%s strings)", defaultMissingStrings.size()));
+            System.out.println(String.format("Strings missing in default locale (exist in some other) (%s strings)", defaultMissingStrings.size()));
             for (String defaultMissingString : defaultMissingStrings) {
                 System.out.println("\t" + defaultMissingString);
             }
@@ -121,7 +121,7 @@ public final class AndroidMissingTranslationsFinder {
         }
 
         if (commonMissingStrings.size() > 0) {
-            System.out.println(String.format("Default locale only string (missing in ALL others) (%s strings)", commonMissingStrings.size()));
+            System.out.println(String.format("Default locale only strings (missing in ALL others) (%s strings)", commonMissingStrings.size()));
             for (String commonMissingString : commonMissingStrings) {
                 System.out.println("\t" + commonMissingString);
             }
@@ -132,7 +132,7 @@ public final class AndroidMissingTranslationsFinder {
         for (String locale : locales) {
             final Set<String> localeMissingStrings = missingStrings.get(locale);
             if (localeMissingStrings.size() > 0) {
-                System.out.println(String.format("[%s] locale missing strings (may exist in others) (%s strings)", locale, localeMissingStrings.size()));
+                System.out.println(String.format("[%s] locale missing strings (exist in default) (%s strings)", locale, localeMissingStrings.size()));
                 for (String string : localeMissingStrings) {
                     System.out.println("\t" + string);
                 }
