@@ -6,55 +6,89 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
 /**
- * Dummy Android missing translations finder.
- * <p>
- * Do not forget to change RES_DIR constant to your actual value before running!
+ * Missing translations finder
+ *
+ * Usage in terminal from project root directory:
+ *
+ * javac MissingStringsFinder.java && java MissingStringsFinder
  */
 public final class AndroidMissingTranslationsFinder {
 
-    private static final String RES_DIR = "/Users/USER/workspace/PROJECT/app/src/main/res/";
+    private static final String RES_DIR = "./app/src/main/res/";
 
     private static final String VALUES_DIR = "values";
     private static final String STRINGS_FILE = "strings.xml";
 
-    private static final String[] LOCALES = {
-            "da", "de", "el", "en-rGB", "es", "fi", "fr", "it", "nl", "no", "pl", "pt", "ru", "sv", "tr"
-    };
+    private static final String REGEX_SUFFIX_LANGUAGE = "[a-z]{2}"; // "da", "de", "fr", etc.
+    private static final String REGEX_SUFFIX_LANGUAGE_COUNTRY = "[a-z]{2}-r[A-Z]{2}"; // "en-rGB", "pt-rBR", etc.
 
 
     public static void main(String[] args) throws Exception {
 
+        // app locales
+        final List<String> locales = new LinkedList<>();
+
         // set of strings in default locale
-        final Set<String> defaultStringsSet = getTranslations(null);
+        final Set<String> defaultStrings = getTranslations(null);
 
         // map of missing string sets for each app locale (locale is a key)
         final Map<String, Set<String>> missingStrings = new HashMap<>();
+
+        // set of strings not existing in default locale
+        final Set<String> defaultMissingStrings = new HashSet<>();
 
         // set of string existing only in default locale but missing in all others
         final Set<String> commonMissingStrings = new HashSet<>();
 
 
+        // find locales
+        final File resDirectory = new File(RES_DIR);
+        final String localisedValuesPrefix = VALUES_DIR + "-";
+        for (File file : resDirectory.listFiles()) {
+            if (file.getName().startsWith(localisedValuesPrefix)) {
+                final String suffix =
+                        file.getName().substring(localisedValuesPrefix.length(), file.getName().length());
+                if (suffix.matches(REGEX_SUFFIX_LANGUAGE) || suffix.matches(REGEX_SUFFIX_LANGUAGE_COUNTRY)) {
+                    locales.add(suffix);
+                }
+            }
+        }
+        System.out.println(String.format("Locales found: %s + default", locales.size()));
+        for (int i = 0; i < locales.size(); i++) {
+            System.out.print(locales.get(i));
+            if (i < locales.size() - 1) {
+                System.out.print(", ");
+            }
+        }
+        System.out.println("\n");
+
         // find missing strings
-        for (String locale : LOCALES) {
+        for (String locale : locales) {
             final Set<String> localizedStringsSet = getTranslations(locale);
-            final Set<String> missingStringsSet = defaultStringsSet
+            final Set<String> missingStringsSet = new HashSet<>();
+
+            // missing in locale
+            missingStringsSet.addAll(defaultStrings
                     .stream()
                     .filter(stringName -> !localizedStringsSet.contains(stringName))
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toSet()));
 
             missingStrings.put(locale, missingStringsSet);
+
+            // missing in default
+            defaultMissingStrings.addAll(localizedStringsSet
+                    .stream()
+                    .filter(localisedString -> !defaultStrings.contains(localisedString))
+                    .collect(Collectors.toSet()));
         }
 
         // find common missing strings
-        for (String locale : LOCALES) {
+        for (String locale : locales) {
             final Set<String> localeMissingStrings = missingStrings.get(locale);
             commonMissingStrings.addAll(localeMissingStrings
                     .stream()
@@ -63,7 +97,7 @@ public final class AndroidMissingTranslationsFinder {
         }
 
         // remove common missing string from locale specific sets
-        for (String locale : LOCALES) {
+        for (String locale : locales) {
             final Set<String> localeMissingStrings = missingStrings.get(locale);
             commonMissingStrings.forEach(localeMissingStrings::remove);
         }
@@ -71,8 +105,18 @@ public final class AndroidMissingTranslationsFinder {
 
         // Print results
         int totalMissingStrings = 0;
+
+        if (defaultMissingStrings.size() > 0) {
+            System.out.println(String.format("Strings missing in default locale (exist in some other) (%s strings)", defaultMissingStrings.size()));
+            for (String defaultMissingString : defaultMissingStrings) {
+                System.out.println("\t" + defaultMissingString);
+            }
+            System.out.println();
+            totalMissingStrings += defaultMissingStrings.size();
+        }
+
         if (commonMissingStrings.size() > 0) {
-            System.out.println(String.format("Default locale only string (missing in ALL others) (%s strings)", commonMissingStrings.size()));
+            System.out.println(String.format("Default locale only strings (missing in ALL others) (%s strings)", commonMissingStrings.size()));
             for (String commonMissingString : commonMissingStrings) {
                 System.out.println("\t" + commonMissingString);
             }
@@ -80,10 +124,10 @@ public final class AndroidMissingTranslationsFinder {
             totalMissingStrings += commonMissingStrings.size();
         }
 
-        for (String locale : LOCALES) {
+        for (String locale : locales) {
             final Set<String> localeMissingStrings = missingStrings.get(locale);
             if (localeMissingStrings.size() > 0) {
-                System.out.println(String.format("[%s] locale missing strings (may exist in others) (%s strings)", locale, localeMissingStrings.size()));
+                System.out.println(String.format("[%s] locale missing strings (exist in default) (%s strings)", locale, localeMissingStrings.size()));
                 for (String string : localeMissingStrings) {
                     System.out.println("\t" + string);
                 }
