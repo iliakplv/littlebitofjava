@@ -10,11 +10,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
  * Dummy Android missing translations finder.
- *
+ * <p>
  * Do not forget to change RES_DIR constant to your actual value before running!
  */
 public final class AndroidMissingTranslationsFinder {
@@ -44,13 +45,10 @@ public final class AndroidMissingTranslationsFinder {
         // find missing strings
         for (String locale : LOCALES) {
             final Set<String> localizedStringsSet = getTranslations(locale);
-            final Set<String> missingStringsSet = new HashSet<>();
-
-            for (String stringName : defaultStringsSet) {
-                if (!localizedStringsSet.contains(stringName)) {
-                    missingStringsSet.add(stringName);
-                }
-            }
+            final Set<String> missingStringsSet = defaultStringsSet
+                    .stream()
+                    .filter(stringName -> !localizedStringsSet.contains(stringName))
+                    .collect(Collectors.toSet());
 
             missingStrings.put(locale, missingStringsSet);
         }
@@ -58,19 +56,16 @@ public final class AndroidMissingTranslationsFinder {
         // find common missing strings
         for (String locale : LOCALES) {
             final Set<String> localeMissingStrings = missingStrings.get(locale);
-            for (String string : localeMissingStrings) {
-                if (isStringMissingInAllLocales(missingStrings, string)) {
-                    commonMissingStrings.add(string);
-                }
-            }
+            commonMissingStrings.addAll(localeMissingStrings
+                    .stream()
+                    .filter(string -> isStringMissingInAllLocales(missingStrings, string))
+                    .collect(Collectors.toSet()));
         }
 
         // remove common missing string from locale specific sets
         for (String locale : LOCALES) {
             final Set<String> localeMissingStrings = missingStrings.get(locale);
-            for (String commonMissingString : commonMissingStrings) {
-                localeMissingStrings.remove(commonMissingString);
-            }
+            commonMissingStrings.forEach(localeMissingStrings::remove);
         }
 
 
