@@ -2,6 +2,7 @@ package com.iliakplv.java;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class Java8Test {
 
@@ -14,7 +15,6 @@ public class Java8Test {
 
 	    // functional interface
 	    list.forEach(System.out::print);
-
 	    System.out.println();
 
 	    Converter<String, Integer> converter = Integer::valueOf;
@@ -22,7 +22,14 @@ public class Java8Test {
 
 	    Operation<Integer> add = (a, b) -> a + b;
 	    System.out.println(add.perform(2, 3));
-	}
+
+        // optional
+        Optional<Integer> intOpt1 = Optional.of(5);
+        Integer int2 = null;
+        Optional<Integer> intOpt2 = Optional.ofNullable(int2);
+        System.out.println(intOpt1.isPresent());
+        System.out.println(intOpt2.isPresent());
+    }
 
 
 	@FunctionalInterface
