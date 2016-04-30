@@ -19,7 +19,7 @@ public class Graph {
 	}
 
 
-	public void addEdge(String fromVertex, String toVertex) {
+	private void addEdge(String fromVertex, String toVertex) {
 		final Set<String> adjacentVertices;
 		if (graph.containsKey(fromVertex)) {
 			adjacentVertices = graph.get(fromVertex);
@@ -36,7 +36,7 @@ public class Graph {
 	}
 
 
-	public boolean containsCycle() {
+	private boolean containsCycle() {
 		final Set<String> visitedVertices = new HashSet<>();
 
 		for (String vertex : graph.keySet()) {
