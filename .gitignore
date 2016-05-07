@@ -1,0 +1,6 @@
+# IDE config files
+/.idea/*
+*.iml
+
+# Local classes
+/src/com/iliakplv/java/local/*
