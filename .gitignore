@@ -4,3 +4,6 @@
 
 # Local classes
 /src/com/iliakplv/java/local/*
+
+# Local data
+/data-local/*
